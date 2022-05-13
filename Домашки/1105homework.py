@@ -146,7 +146,7 @@ def what_about_lecturers(lecturers, course):
         if course in i.grades:
             another_average += i.grades[course]
 
-    print(f'Средняя оценка за лекции по курсу {course}: {round(numpy.average(another_average), 2)}' if isinstance(i, Lecturer) else 'Это не лекторы')
+    print(f'Средняя оценка за лекции по курсу {course}: {round(numpy.average(another_average), 2)}')
 
 
 
