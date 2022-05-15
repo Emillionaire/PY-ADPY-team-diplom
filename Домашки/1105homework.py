@@ -150,7 +150,6 @@ def what_about_lecturers(lecturers, course):
 
 
 
-what_about_lecturers([*Lecturer.all_lecturers], 'Drums')
-what_about_students([*Student.all_students], 'Drums')
+print(gul)
 
 
