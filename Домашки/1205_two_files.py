@@ -2,13 +2,14 @@ import os
 import glob
 
 BASE_PATH = os.getcwd()
-FILES_DIR_NAME = 'sorted'
-full_path = os.path.join(BASE_PATH, FILES_DIR_NAME)
-result_file = 'result.txt'
+# FILES_DIR_NAME = 'sorted'
+# full_path = os.path.join(BASE_PATH, FILES_DIR_NAME)
+# result_file = 'result.txt'
 files_dir = {}
 sorted_files_dir = {}
 
-def take_lines():
+def take_lines(FILES_DIR_NAME, result_file):
+    full_path = os.path.join(BASE_PATH, FILES_DIR_NAME)
     for filename in glob.glob(os.path.join(full_path, '*.txt')):
         if result_file not in filename:
             with open(filename, encoding='utf-8') as f:
@@ -17,10 +18,10 @@ def take_lines():
                 sorted_files_dir = {k: v for k, v in sorted_tuples}
     return(sorted_files_dir)
 
-def write_new_file():
-    a = take_lines()
+def write_new_file(FILES_DIR_NAME, result_file):
+    a = take_lines(FILES_DIR_NAME, result_file)
+    full_path = os.path.join(BASE_PATH, FILES_DIR_NAME)
     with open(os.path.join(full_path, result_file), 'w', encoding='utf-8',) as res:
-        # for filename in glob.glob(os.path.join(full_path, '*.txt')):
         for key in a.keys():
             sorted_file_name = os.path.join(full_path, key)
             with open(sorted_file_name, encoding='utf-8') as f:
@@ -30,5 +31,5 @@ def write_new_file():
                 res.write(f'\n')
 
 
-write_new_file()
+write_new_file('sorted', 'rec.txt')
 
