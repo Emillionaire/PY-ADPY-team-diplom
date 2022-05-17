@@ -20,7 +20,7 @@ def cook_book_func(name_file: str):
             except:
                 break
         return(cook_book)
-        # pprint.pprint(cook_book, sort_dicts=False)
+        # pprint.pprint(cook_book, sort_dicts=False, width=100)
 
 
 def get_shop_list_by_dishes(dishes, person_count, name_file):
@@ -42,5 +42,5 @@ def get_shop_list_by_dishes(dishes, person_count, name_file):
                 shop_list[list(ingredient.values())[0]]['quantity'] += a
     pprint.pprint(shop_list)
 
-get_shop_list_by_dishes(['Омлет'], 1, 'rec.txt')
-
+# get_shop_list_by_dishes(['Омлет'], 1, 'rec.txt')
+cook_book_func('rec.txt')
