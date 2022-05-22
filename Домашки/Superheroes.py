@@ -14,7 +14,7 @@ def get_intelligence(names):
 
 def smartest_hero(names):
     sorted_heroes = get_intelligence(names)
-    print(f'Самый умный герой - {max(sorted_heroes, key=lambda x: x[0])[0]}')
+    print(f'Самый умный герой - {sorted_heroes[0][0]}')
 
 
 if __name__ == '__main__':
