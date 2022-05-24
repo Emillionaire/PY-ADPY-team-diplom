@@ -30,7 +30,7 @@ class YaUploader:
 if __name__ == '__main__':
     token = input('Введите токен: ')
     file_name = input('Что загружаем? ')
-    disk_file_path = 'test_for_dev/' + file_name
+    disk_file_path = input('А куда загружаем? ') + '/' + file_name
     uploader = YaUploader(token)
     result = uploader.upload(disk_file_path, file_name)
 
