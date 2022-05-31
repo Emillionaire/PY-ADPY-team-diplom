@@ -32,4 +32,4 @@ def write_new_file(FILES_DIR_NAME, result_file):
 
 
 write_new_file('sorted', 'rec.txt')
-
+print(take_lines('sorted', 'rec.txt'))
