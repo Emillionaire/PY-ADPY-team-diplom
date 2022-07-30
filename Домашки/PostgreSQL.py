@@ -95,6 +95,7 @@ class My_db:
             cur.execute("""
             DELETE FROM person WHERE id=%s""", (client_id));
         self.conn.commit()
+        print('Вжух и нет данных!')
 
     def find_client(self, first_name=None, last_name=None, email=None, phone=None):
         with self.conn.cursor() as cur:
@@ -171,8 +172,19 @@ class My_db:
                 phone = input('Телефон: ')
                 me.change_client(client_id, first_name=name, last_name=surname, email=email, phones=phone)
             if command == 5:
-            # if command == 6:
-            # if command == 7:
+                client_id = input('Введите id: ')
+                phone = input('Какой телефон удалить: ')
+                me.delete_phone(client_id, phone)
+            if command == 6:
+                client_id = input('Введите id: ')
+                me.delete_client(client_id)
+            if command == 7:
+                print('Схема такая же. Введите, по чему ищем, None - если нет')
+                name = input('Имя: ')
+                surname = input('Фамилия: ')
+                email = input('Емейл: ')
+                phone = input('Телефон: ')
+                me.find_client(irst_name=name, last_name=surname, email=email, phones=phone)
 
 
 
