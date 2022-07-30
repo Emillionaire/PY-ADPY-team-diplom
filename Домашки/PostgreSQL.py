@@ -32,6 +32,7 @@ class My_db:
             );
             """)
             self.conn.commit()
+            print('Успешно')
 
     def add_client(self, first_name, last_name, email, phones=None):
         with self.conn.cursor() as cur:
@@ -63,8 +64,8 @@ class My_db:
         self.conn.commit()
         print('Телефон добавлен.')
 
-    def change_client(conn, client_id, first_name=None, last_name=None, email=None, phones=None):
-        with conn.cursor() as cur:
+    def change_client(self, client_id, first_name=None, last_name=None, email=None, phones=None):
+        with self.conn.cursor() as cur:
             if first_name:
                 cur.execute("""
                 UPDATE person SET name=%s WHERE id=%s""", (first_name, client_id));
@@ -77,26 +78,26 @@ class My_db:
             if phones:
                 cur.execute("""
                 UPDATE f_numbers SET phone=%s WHERE personid=%s""", (phones, client_id));
-        conn.commit()
+        self.conn.commit()
 
-    def delete_phone(conn, client_id, phone):
-        with conn.cursor() as cur:
+    def delete_phone(self, client_id, phone):
+        with self.conn.cursor() as cur:
             cur.execute("""
             DELETE FROM f_numbers WHERE id=%s""", (client_id));
-        conn.commit()
+        self.conn.commit()
 
-    def delete_client(conn, client_id):
-        with conn.cursor() as cur:
+    def delete_client(self, client_id):
+        with self.conn.cursor() as cur:
             cur.execute("""
             DELETE FROM emails WHERE id=%s""", (client_id));
             cur.execute("""
             DELETE FROM f_numbers WHERE id=%s""", (client_id));
             cur.execute("""
             DELETE FROM person WHERE id=%s""", (client_id));
-        conn.commit()
+        self.conn.commit()
 
-    def find_client(conn, first_name=None, last_name=None, email=None, phone=None):
-        with conn.cursor() as cur:
+    def find_client(self, first_name=None, last_name=None, email=None, phone=None):
+        with self.conn.cursor() as cur:
             if first_name:
                 cur.execute("""
                 SELECT name, surname, email, phone FROM person p
