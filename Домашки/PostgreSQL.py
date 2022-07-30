@@ -83,7 +83,7 @@ class My_db:
     def delete_phone(self, client_id, phone):
         with self.conn.cursor() as cur:
             cur.execute("""
-            DELETE FROM f_numbers WHERE id=%s""", (client_id));
+            DELETE FROM f_numbers WHERE personid=%s AND phone=%s""", (client_id, phone));
         self.conn.commit()
 
     def delete_client(self, client_id):
@@ -157,13 +157,20 @@ class My_db:
                 surname = input('Введите фамилию: ')
                 email = input('Введите емайл: ')
                 phone = input('Введите телефон или None: ')
-                self.add_client(name, surname, email, phone)
+                me.add_client(name, surname, email, phone)
             if command == 3:
                 client_id = input('Введите id: ')
                 phone = input('Введите телефон: ')
                 me.add_phone(client_id, phone)
-            # if command == 4:
-            # if command == 5:
+            if command == 4:
+                client_id = input('Введите id: ')
+                print('Введите, если меняем данные, None - если нет')
+                name = input('Имя: ')
+                surname = input('Фамилия: ')
+                email = input('Емейл: ')
+                phone = input('Телефон: ')
+                me.change_client(client_id, first_name=name, last_name=surname, email=email, phones=phone)
+            if command == 5:
             # if command == 6:
             # if command == 7:
 
