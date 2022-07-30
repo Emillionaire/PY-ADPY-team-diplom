@@ -184,7 +184,7 @@ class My_db:
                 surname = input('Фамилия: ')
                 email = input('Емейл: ')
                 phone = input('Телефон: ')
-                me.find_client(irst_name=name, last_name=surname, email=email, phones=phone)
+                me.find_client(first_name=name, last_name=surname, email=email, phones=phone)
 
 
 
