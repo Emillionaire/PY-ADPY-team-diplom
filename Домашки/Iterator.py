@@ -20,7 +20,7 @@ class FlatIterator:
 if __name__ == '__main__':
     nested_list = [
         ['a', 'b', 'c'],
-        ['d', 'e', 'f', 'h', False, ['666']],
+        ['d', 'e', 'f', 'h', False],
         [1, 2, None],
     ]
     for item in FlatIterator(nested_list):
