@@ -16,19 +16,28 @@ class FlatIterator:
             raise StopIteration
         return self.list[self.start][self.deeper]
 
-def flat_generator(nested_list): #Задание 2
+def deeper(nested_list):
     i = 0
     while i < len(nested_list):
         y = 0
         while y < len(nested_list[i]):
+
             yield nested_list[i][y]
             y+=1
         i+=1
 
 
+def flat_generator(nested_list): #Задание 2, любой уровень вложенности
+    for i in nested_list:
+        if isinstance(i, list):
+            yield from flat_generator(i)
+        else:
+            yield i
+
+
 if __name__ == '__main__':
     nested_list = [
-        ['a', 'b', 'c'],
+        [['666', ['222']], 'a', 'b', 'c'],
         ['d', 'e', 'f', 'h', False],
         [1, 2, None],
     ]
