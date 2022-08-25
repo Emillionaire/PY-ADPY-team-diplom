@@ -13,7 +13,12 @@ from sql import Sql_table
 def write_msg(user_id, message):
     authorize.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
 
-tok = 'vk1.a.rcp2FueTHGts8y7r1dz9hefmlm1ot5rgiEsBWV52urMzufSBvaSBp7qk2BugAh1NaPly74Hli04pqL2zdUubI98-46ZT_H41i0p_hBIfJAM6mZhnXW_9ikYWLGUcFG6qKeMPDmzYm9OzCu04j-Mq1K3LUxdimqaeWcSUKp03h6Q27rnMDUc6VqGT6vPNHajq'
+
+path = 'settings.ini'
+config = configparser.ConfigParser()
+config.read(path)
+tok = config.get("Tokens", "bot_token")
+
 authorize = vk_api.VkApi(token=tok)
 
 vku = VkUsers()
