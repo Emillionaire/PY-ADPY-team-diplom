@@ -28,7 +28,7 @@ longpoll = VkLongPoll(authorize)
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW:
         p_info = vku.get_person_info(event.user_id)
-        if event.to_me and not event.text.isdigit():
+        if event.to_me and event.text.lower() == 'привет':
             b_date = p_info['response'][0]['bdate'][-4:]
             print(b_date)
             if not b_date.isdigit():
@@ -37,6 +37,6 @@ for event in longpoll.listen():
             b_date = event.text
             print(b_date)
             print(p_info['response'])
-            sql.add_person(p_info['response'][0]['id'], p_info['response'][0]['first_name']+' '+p_info['response'][0]['last_name'], p_info['response'][0]['city']['id'], b_date, p_info['response'][0]['sex'])
+        sql.add_person(p_info['response'][0]['id'], p_info['response'][0]['first_name']+' '+p_info['response'][0]['last_name'], p_info['response'][0]['city']['id'], b_date, p_info['response'][0]['sex'])
 
 
