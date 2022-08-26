@@ -36,8 +36,8 @@ def create_tables(conn: connection) -> None:
         );
     """
 
-    user = """
-        CREATE TABLE IF NOT EXISTS _user (
+    person = """
+        CREATE TABLE IF NOT EXISTS person (
         ID SERIAL PRIMARY KEY,
         vk_id INT NOT NULL UNIQUE,
         name VARCHAR NOT NULL,
@@ -50,7 +50,7 @@ def create_tables(conn: connection) -> None:
     user_favorite = """
         CREATE TABLE IF NOT EXISTS user_favorite (
         ID SERIAL PRIMARY KEY,
-        personid INT NOT NULL references _user(ID),
+        personid INT NOT NULL references person(ID),
         favorite_id INT NOT NULL references favorite_person(ID)
         );
     """
@@ -58,7 +58,7 @@ def create_tables(conn: connection) -> None:
     user_viewed = """
         CREATE TABLE IF NOT EXISTS user_viewed (
         ID SERIAL PRIMARY KEY,
-        personid INT NOT NULL references _user(ID),
+        personid INT NOT NULL references person(ID),
         viewed_id INT NOT NULL references viewed_person(ID)
         );
     """
@@ -66,7 +66,7 @@ def create_tables(conn: connection) -> None:
     person_int = """
         CREATE TABLE IF NOT EXISTS person_int (
         ID SERIAL PRIMARY KEY,
-        personid INT NOT NULL references _user(ID),
+        personid INT NOT NULL references person(ID),
         intid INT NOT NULL references interests(ID)
         );
     """
@@ -74,7 +74,7 @@ def create_tables(conn: connection) -> None:
         cursor.execute(favorite_person)
         cursor.execute(viewed_person)
         cursor.execute(interests)
-        cursor.execute(user)
+        cursor.execute(person)
         cursor.execute(user_favorite)
         cursor.execute(user_viewed)
         cursor.execute(person_int)
