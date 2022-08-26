@@ -27,8 +27,8 @@ sql = Sql_table()
 longpoll = VkLongPoll(authorize)
 for event in longpoll.listen():
     if event.type == VkEventType.MESSAGE_NEW:
+        p_info = vku.get_person_info(event.user_id)
         if event.to_me and not event.text.isdigit():
-            p_info = vku.get_person_info(event.user_id)
             b_date = p_info['response'][0]['bdate'][-4:]
             print(b_date)
             if not b_date.isdigit():
