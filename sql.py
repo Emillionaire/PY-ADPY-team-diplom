@@ -1,25 +1,6 @@
 import psycopg2
 import configparser
 
-# CREATE TABLE IF NOT EXISTS Interests (
-# Id SERIAL PRIMARY KEY,
-# name VARCHAR (850) NOT null
-# );
-#
-# CREATE TABLE IF NOT EXISTS Person (
-# Id SERIAL PRIMARY KEY,
-# vk_id INTEGER NOT null,
-# name VARCHAR (850) NOT null,
-# city VARCHAR (850) NOT null,
-# bdate INTEGER NOT null
-# );
-#
-# CREATE TABLE IF NOT EXISTS Person_int (
-# PersonID INTEGER REFERENCES Person(Id),
-# IntID INTEGER REFERENCES Interests(Id),
-# CONSTRAINT pkPI PRIMARY KEY (PersonID, IntID)
-# );
-
 class Sql_table:
     def __init__(self):
         self.path = 'settings.ini'
@@ -27,10 +8,19 @@ class Sql_table:
         self.config.read(self.path)
         self.conn = psycopg2.connect(database =  self.config.get("SQL", "database"), user = self.config.get("SQL", "user"), password = self.config.get("SQL", "password"))
 
-    def add_person (self, id, name, city, bdate, sex):
+    def add_person (self, id, name, city, bdate, sex): #добавляет пользователя в таблицу Person
         with self.conn.cursor() as cur:
             cur.execute("""
             INSERT INTO Person(vk_id, name, city, bdate, sex)
             VALUES (%s, %s, %s, %s, %s) RETURNING id""", (id, name, city, bdate, sex));
             personid = cur.fetchone()[0]
         self.conn.commit()
+
+    def we_know_him(self, id): #проверяет наличие человека в таблице Person
+        with self.conn.cursor() as cur:
+            cur.execute("""
+            SELECT EXISTS(SELECT vk_id FROM person WHERE vk_id = %s) 
+            """ % (id));
+            a = cur.fetchone()[0]
+            return a
+
