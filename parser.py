@@ -54,9 +54,9 @@ for event in longpoll.listen():
             vk.messages.send(
                 keyboard=keyboard.get_keyboard(),
                 random_id=random.randint(0, 2048),
-                key=('d888bf02174ccfde5be21361b1fbe65490434c8b'),
-                server=("https://lp.vk.com/wh72316872"),
-                ts=('1'),
+                key=(config.get("Buttons", "key")),
+                server=(config.get("Buttons", "server")),
+                ts=(config.get("Buttons", "ts")),
                 message='Держи',
                 user_id=event.user_id
             )
