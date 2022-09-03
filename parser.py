@@ -33,7 +33,19 @@ vku = VkUsers()
 sql = Sql_table()
 settings = dict(one_time=False, inline=True)
 keyboard = VkKeyboard(**settings)
-keyboard.add_button('Привет', color=VkKeyboardColor.NEGATIVE)
+# keyboard.add_button('Привет', color=VkKeyboardColor.NEGATIVE)
+
+
+def red_button(text, message, color):
+    keyboard.add_button(text, color=color)
+    vk.messages.send(
+        keyboard=keyboard.get_keyboard(),
+        random_id=random.randint(0, 2048),
+        key=(config.get("Buttons", "key")),
+        server=(config.get("Buttons", "server")),
+        ts=(config.get("Buttons", "ts")),
+        message=message,
+        user_id=event.user_id)
 
 longpoll = VkLongPoll(authorize) #Слушаем чат
 for event in longpoll.listen():
@@ -49,17 +61,29 @@ for event in longpoll.listen():
             if event.to_me and event.text.isdigit(): #это он пишет нам год
                 b_date = event.text
                 sql_add() #и мы добавляем человека в БД
-        elif event.to_me:
-            write_msg(event.user_id, 'Lhfnenb') #на это пока не обращай внимание, это я кнопки пытаюсь сделать
-            vk.messages.send(
-                keyboard=keyboard.get_keyboard(),
-                random_id=random.randint(0, 2048),
-                key=(config.get("Buttons", "key")),
-                server=(config.get("Buttons", "server")),
-                ts=(config.get("Buttons", "ts")),
-                message='Держи',
-                user_id=event.user_id
-            )
+        elif event.to_me and event.text.lower() == 'начать':
+            one_list = []
+            person_list = vku.get_another_people(event.user_id)['response']['items']
+            for item in  person_list:
+                if 'city' in item.keys() and item['city']['id'] == int(sql.take_user_data(event.user_id)['city']):
+                    one_list.append(item['id'])
+            for i in one_list:
+                sql.add_relevant_persons(event.user_id, i)
+            red_button('next', 'жми next и будет тебе счастье', VkKeyboardColor.NEGATIVE)
+
+
+
+
+            #write_msg(event.user_id, 'Lhfnenb') #на это пока не обращай внимание, это я кнопки пытаюсь сделать
+            # vk.messages.send(
+            #     keyboard=keyboard.get_keyboard(),
+            #     random_id=random.randint(0, 2048),
+            #     key=(config.get("Buttons", "key")),
+            #     server=(config.get("Buttons", "server")),
+            #     ts=(config.get("Buttons", "ts")),
+            #     message='Держи',
+            #     user_id=event.user_id
+            # )
 
 
 
