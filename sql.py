@@ -1,5 +1,7 @@
 import psycopg2
 import configparser
+from psycopg2.extras import DictCursor
+
 
 class Sql_table:
     def __init__(self):
@@ -24,3 +26,53 @@ class Sql_table:
             a = cur.fetchone()[0]
             return a
 
+    def take_user_data(self, user_id):
+        with self.conn.cursor(cursor_factory=DictCursor) as cur:
+            cur.execute('''
+                SELECT * FROM person WHERE vk_id = %s
+            ''', (user_id,))
+            self.conn.commit()
+            result = cur.fetchone()
+            result_dict = {
+                'vk_id': result['vk_id'],
+                'name': result['name'],
+                'city': result['city'],
+                'bdate': result['bdate'],
+                'sex': result['sex']
+            }
+            return result_dict
+
+    def add_relevant_persons (self, person_id):
+        try:
+            with self.conn.cursor() as cursor:
+                cursor.execute('''
+                    INSERT INTO user_relevant (vk_id)
+                    VALUES (%s)
+                ''', (person_id,))
+
+            self.conn.commit()
+        except:
+            pass
+
+    def add_relevant_persons(self,user_id,  relevant_person_id):
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                INSERT INTO user_relevant (person_vk_id, rel_person_vk_id)
+                VALUES (%s, %s)
+            ''', (user_id, relevant_person_id,))
+            self.conn.commit()
+
+    def take_relevant_user(self, person_id):
+        with self.conn.cursor() as cur:
+            cur.execute('''
+            SELECT rel_person_vk_id FROM user_relevant WHERE person_vk_id = %s
+            ''', (person_id,))
+            self.conn.commit()
+            result = cur.fetchall()
+        return result
+    
+
+
+# mmm =Sql_table()
+# mmm.add_all_persons('5544')
+# mmm.add_relevant_persons('95181270', '2971071')
