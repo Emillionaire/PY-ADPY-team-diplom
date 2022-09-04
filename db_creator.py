@@ -28,6 +28,33 @@ def create_tables(conn: connection) -> None:
         vk_id INT NOT NULL UNIQUE
         );
     """
+    # all_users = """
+    #     CREATE TABLE IF NOT EXISTS all_users (
+    #     ID SERIAL PRIMARY KEY,
+    #     person_vk_id INT NOT NULL,
+    #     name VARCHAR NOT NULL
+    #     );
+    # """
+
+    user_relevant = """
+        CREATE TABLE IF NOT EXISTS user_relevant (
+        ID SERIAL PRIMARY KEY,
+        person_vk_id INT NOT NULL,
+        rel_person_id INT NOT NULL,
+        name VARCHAR NOT NULL
+        );
+    """
+
+
+
+#     user_relevant = """
+#         CREATE TABLE IF NOT EXISTS user_relevant (
+#         Rel_userID INTEGER REFERENCES all_users(Id),
+#         PersonID INTEGER REFERENCES person(Id),
+#         CONSTRAINT pkAG PRIMARY KEY (PersonID, Rel_userID)
+# );
+#         );
+#     """
 
     interests = """
         CREATE TABLE IF NOT EXISTS interests (
