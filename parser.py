@@ -3,14 +3,16 @@ import requests
 from datetime import datetime
 import sys
 import json
+import vk
 from pprint import pprint
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
 import random
 import vk_api
+from vk_api import VkUpload
 from vk_api.longpoll import VkLongPoll, VkEventType
 from Vk_get import VkUsers
 from sql import Sql_table
-import re
+
 
 def write_msg(user_id, message):
     authorize.method('messages.send', {'user_id': user_id, 'message': message, 'random_id': random.randint(0, 2048)})
@@ -25,19 +27,21 @@ path = 'settings.ini'
 config = configparser.ConfigParser()
 config.read(path)
 tok = config.get("Tokens", "bot_token")
+vk_tok = config.get("Tokens", "vk_token")
 
 authorize = vk_api.VkApi(token=tok)
 vk = authorize.get_api()
+upload = VkUpload(authorize)
+
 
 vku = VkUsers()
 sql = Sql_table()
 settings = dict(one_time=False, inline=True)
 keyboard = VkKeyboard(**settings)
-# keyboard.add_button('Привет', color=VkKeyboardColor.NEGATIVE)
+keyboard.add_button('Next', color=VkKeyboardColor.NEGATIVE)
 
 
-def red_button(text, message, color):
-    keyboard.add_button(text, color=color)
+def button(message):
     vk.messages.send(
         keyboard=keyboard.get_keyboard(),
         random_id=random.randint(0, 2048),
@@ -46,6 +50,9 @@ def red_button(text, message, color):
         ts=(config.get("Buttons", "ts")),
         message=message,
         user_id=event.user_id)
+
+
+coll_i = 0
 
 longpoll = VkLongPoll(authorize) #Слушаем чат
 for event in longpoll.listen():
@@ -64,26 +71,38 @@ for event in longpoll.listen():
         elif event.to_me and event.text.lower() == 'начать':
             one_list = []
             person_list = vku.get_another_people(event.user_id)['response']['items']
+            # pprint(person_list)
             for item in  person_list:
+                name = item['first_name']+' '+ item['last_name']
                 if 'city' in item.keys() and item['city']['id'] == int(sql.take_user_data(event.user_id)['city']):
-                    one_list.append(item['id'])
+                    if 'relation' in item.keys() and item['relation'] not in (2,3,4,7,8):
+                        one_list.append((item['id'], name))
+                    elif 'relation' not in item.keys():
+                        one_list.append((item['id'], name))
             for i in one_list:
-                sql.add_relevant_persons(event.user_id, i)
-            red_button('next', 'жми next и будет тебе счастье', VkKeyboardColor.NEGATIVE)
+                sql.add_relevant_persons(event.user_id, int(i[0]), i[1]) #добавили всех релевантных в таблицу
+        #     button('Ну, погнали, жми кнопку')
+        # elif event.to_me and event.text.lower() == 'next':
+        #
+        #     collection = sql.take_relevant_user(event.user_id)
+        #     try:
+        #         peer_id = event.peer_id
+        #         rel_foto = vku.get_photos(collection[coll_i])
+        #         photos = []
+        #         for foto in rel_foto[0:3]:
+        #             photos.append(f'photo{foto[4]}_{foto[3]}_{vk_tok}')
+        #         vk.messages.send(
+        #             random_id=random.randint(0, 2048),
+        #             peer_id=peer_id,
+        #             attachment=photos,
+        #             message=)
+        #         coll_i += 1
+        #         button('жми next и будет тебе счастье')
+        #     except KeyError:
+        #         write_msg(event.user_id, 'Люди кончились, иди работать')
+        #         coll_i = 0
 
 
-
-
-            #write_msg(event.user_id, 'Lhfnenb') #на это пока не обращай внимание, это я кнопки пытаюсь сделать
-            # vk.messages.send(
-            #     keyboard=keyboard.get_keyboard(),
-            #     random_id=random.randint(0, 2048),
-            #     key=(config.get("Buttons", "key")),
-            #     server=(config.get("Buttons", "server")),
-            #     ts=(config.get("Buttons", "ts")),
-            #     message='Держи',
-            #     user_id=event.user_id
-            # )
 
 
 
