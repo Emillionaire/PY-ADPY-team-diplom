@@ -41,27 +41,19 @@ class VkUsers:
 
         params = {
             'sort': 0,
-            'count': 10,
+            'count': 100,
             'city': city,
             'birth_year': bdate,
             'sex': target_sex,
             'access_token': self.token,
             'v': '5.89',
-            'fields': 'city, status, bdate'
+            'fields': 'city, relation, bdate'
         }
 
         result = requests.post(URL, params=params)
-                             #  data={
-                             # "code":  "var members = API.users.search({'city': '444'});"
-                                     # "var count = members.count;"
-                                     # "var offset = 1000;"
-                                     # "while (offset < count);"
-                                     #     "{;"
-                                     #        "members = members + \" , \" + API.users.search({'city': city, \"offset\": offset}).users;"
-                                     #        "offset = offset + 1000;"
-                                     #     "};"
-                                     # "return members;"})
+
         return result.json()
+        # pprint(result.json())
 
     def get_photos(self, relevant_id):
         URL = 'https://api.vk.com/method/photos.get'
@@ -79,19 +71,22 @@ class VkUsers:
         photo_dict = {}
         photo_list = []
         result = res.json()['response']['items']
-        pprint(result)
+        # pprint(result)
         for photos in result:
             like = photos['likes']['count']
-            id = photos['id']
             for photo in photos['sizes']:
                 photo['likes'] = like
+                photo['id'] = photos['id']
+                photo['owner_id'] = photos['owner_id']
                 f_photo = {key: photo[key] for key in photo if key not in ['height', 'width']}
                 photo_dict = {**photo_dict, **f_photo}
             photo_list.append([*photo_dict.values()])
             photo_list.sort(key=lambda i: i[2], reverse=True)
-        pprint(photo_list)
+        return photo_list
+
+        # pprint(photo_list)
 
 
 
 vvv = VkUsers()
-vvv.get_photos(197865810)
+vvv.get_another_people(197865810)

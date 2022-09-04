@@ -54,18 +54,18 @@ class Sql_table:
         except:
             pass
 
-    def add_relevant_persons(self,user_id,  relevant_person_id):
+    def add_relevant_persons(self,user_id,  relevant_person_id, name):
         with self.conn.cursor() as cur:
             cur.execute('''
-                INSERT INTO user_relevant (person_vk_id, rel_person_vk_id)
-                VALUES (%s, %s)
-            ''', (user_id, relevant_person_id,))
+                INSERT INTO user_relevant (person_vk_id, rel_person_id, name)
+                VALUES (%s, %s, %s)
+            ''', (user_id, relevant_person_id, name,))
             self.conn.commit()
 
     def take_relevant_user(self, person_id):
         with self.conn.cursor() as cur:
             cur.execute('''
-            SELECT rel_person_vk_id FROM user_relevant WHERE person_vk_id = %s
+            SELECT rel_person_id FROM user_relevant WHERE person_vk_id = %s
             ''', (person_id,))
             self.conn.commit()
             result = cur.fetchall()
