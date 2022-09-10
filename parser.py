@@ -38,18 +38,24 @@ vku = VkUsers()
 sql = Sql_table()
 settings = dict(one_time=False, inline=True)
 keyboard = VkKeyboard(**settings)
-keyboard.add_button('Next', color=VkKeyboardColor.NEGATIVE)
+keyboard.add_button('Next', color=VkKeyboardColor.PRIMARY)
 
+full_kb = VkKeyboard(**settings)
+full_kb.add_button('Like', color=VkKeyboardColor.POSITIVE)
+full_kb.add_button('В ЧС', color=VkKeyboardColor.NEGATIVE)
+full_kb.add_button('Избранное', color=VkKeyboardColor.POSITIVE)
+full_kb.add_button('Next', color=VkKeyboardColor.PRIMARY)
 
-def button(message):
+def button(message, kb):
     vk.messages.send(
-        keyboard=keyboard.get_keyboard(),
+        keyboard=kb.get_keyboard(),
         random_id=random.randint(0, 2048),
         key=(config.get("Buttons", "key")),
         server=(config.get("Buttons", "server")),
         ts=(config.get("Buttons", "ts")),
         message=message,
         user_id=event.user_id)
+
 
 
 coll_i = 0
@@ -81,26 +87,26 @@ for event in longpoll.listen():
                         one_list.append((item['id'], name))
             for i in one_list:
                 sql.add_relevant_persons(event.user_id, int(i[0]), i[1]) #добавили всех релевантных в таблицу
-        #     button('Ну, погнали, жми кнопку')
-        # elif event.to_me and event.text.lower() == 'next':
-        #
-        #     collection = sql.take_relevant_user(event.user_id)
-        #     try:
-        #         peer_id = event.peer_id
-        #         rel_foto = vku.get_photos(collection[coll_i])
-        #         photos = []
-        #         for foto in rel_foto[0:3]:
-        #             photos.append(f'photo{foto[4]}_{foto[3]}_{vk_tok}')
-        #         vk.messages.send(
-        #             random_id=random.randint(0, 2048),
-        #             peer_id=peer_id,
-        #             attachment=photos,
-        #             message=)
-        #         coll_i += 1
-        #         button('жми next и будет тебе счастье')
-        #     except KeyError:
-        #         write_msg(event.user_id, 'Люди кончились, иди работать')
-        #         coll_i = 0
+            button('Ну, погнали, жми кнопку', keyboard)
+
+        elif event.to_me and event.text.lower() == 'next':
+            collection = sql.take_relevant_user(event.user_id)
+            try:
+                peer_id = event.peer_id
+                rel_foto = vku.get_photos(collection[coll_i])
+                photos = []
+                for foto in rel_foto[0:3]:
+                    photos.append(f'photo{foto[4]}_{foto[3]}_{vk_tok}')
+                vk.messages.send(
+                    random_id=random.randint(0, 2048),
+                    peer_id=peer_id,
+                    attachment=photos,
+                    message=None)
+                coll_i += 1
+                button('Жми кнокпи и будет тебе счастье', full_kb)
+            except KeyError:
+                write_msg(event.user_id, 'Люди кончились, иди работать')
+                coll_i = 0
 
 
 
