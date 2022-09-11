@@ -42,35 +42,41 @@ class Sql_table:
             }
             return result_dict
 
-    def add_relevant_persons (self, person_id):
-        try:
-            with self.conn.cursor() as cursor:
-                cursor.execute('''
-                    INSERT INTO user_relevant (vk_id)
-                    VALUES (%s)
-                ''', (person_id,))
-
-            self.conn.commit()
-        except:
-            pass
-
-    def add_relevant_persons(self,user_id,  relevant_person_id, name):
+    def add_relevant_persons(self,user_id,  relevant_person_id, name, status=0): # 0 - нейтральное, 1 - избранное, 2 - ЧС
         with self.conn.cursor() as cur:
             cur.execute('''
-                INSERT INTO user_relevant (person_vk_id, rel_person_id, name)
-                VALUES (%s, %s, %s)
-            ''', (user_id, relevant_person_id, name,))
+                INSERT INTO user_relevant (person_vk_id, rel_person_id, name, status)
+                VALUES (%s, %s, %s, %s)
+            ''', (user_id, relevant_person_id, name, status))
             self.conn.commit()
 
-    def take_relevant_user(self, person_id):
+    def take_relevant_user(self, user_id):
         with self.conn.cursor() as cur:
             cur.execute('''
-            SELECT rel_person_id FROM user_relevant WHERE person_vk_id = %s
-            ''', (person_id,))
+            SELECT rel_person_id, name FROM user_relevant WHERE person_vk_id = %s and status = 0
+            ''', (user_id,))
             self.conn.commit()
             result = cur.fetchall()
         return result
-    
+
+    def make_favorite(self, user_id,  relevant_person_id):
+        with self.conn.cursor() as cur:
+            cur.execute('''
+                UPDATE user_relevant
+                SET status = 1
+                WHERE person_vk_id = %s and rel_person_id = %s
+            ''', (user_id, relevant_person_id))
+            self.conn.commit()
+
+    def show_favorites(self, user_id):
+        with self.conn.cursor() as cur:
+            cur.execute('''
+            SELECT rel_person_id, name FROM user_relevant WHERE person_vk_id = %s and status = 1
+            ''', (user_id,))
+            self.conn.commit()
+            result = cur.fetchall()
+        return result
+
 
 
 # mmm =Sql_table()

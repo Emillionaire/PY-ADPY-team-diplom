@@ -1,8 +1,5 @@
 import configparser
-import requests
-from datetime import datetime
-import sys
-import json
+import traceback
 import vk
 from pprint import pprint
 from vk_api.keyboard import VkKeyboard, VkKeyboardColor
@@ -37,10 +34,10 @@ upload = VkUpload(authorize)
 vku = VkUsers()
 sql = Sql_table()
 settings = dict(one_time=False, inline=True)
-keyboard = VkKeyboard(**settings)
+keyboard = VkKeyboard(**settings) #клавиатура из одной кнопки
 keyboard.add_button('Next', color=VkKeyboardColor.PRIMARY)
 
-full_kb = VkKeyboard(**settings)
+full_kb = VkKeyboard(**settings) #полная клавиатура
 full_kb.add_button('Like', color=VkKeyboardColor.POSITIVE)
 full_kb.add_button('В ЧС', color=VkKeyboardColor.NEGATIVE)
 full_kb.add_button('Избранное', color=VkKeyboardColor.POSITIVE)
@@ -79,12 +76,13 @@ for event in longpoll.listen():
             person_list = vku.get_another_people(event.user_id)['response']['items']
             # pprint(person_list)
             for item in  person_list:
-                name = item['first_name']+' '+ item['last_name']
-                if 'city' in item.keys() and item['city']['id'] == int(sql.take_user_data(event.user_id)['city']):
-                    if 'relation' in item.keys() and item['relation'] not in (2,3,4,7,8):
-                        one_list.append((item['id'], name))
-                    elif 'relation' not in item.keys():
-                        one_list.append((item['id'], name))
+                if not item['is_closed']:
+                    name = item['first_name']+' '+ item['last_name']
+                    if 'city' in item.keys() and item['city']['id'] == int(sql.take_user_data(event.user_id)['city']):
+                        if 'relation' in item.keys() and item['relation'] not in (2,3,4,7,8):
+                            one_list.append((item['id'], name))
+                        elif 'relation' not in item.keys():
+                            one_list.append((item['id'], name))
             for i in one_list:
                 sql.add_relevant_persons(event.user_id, int(i[0]), i[1]) #добавили всех релевантных в таблицу
             button('Ну, погнали, жми кнопку', keyboard)
@@ -92,23 +90,43 @@ for event in longpoll.listen():
         elif event.to_me and event.text.lower() == 'next':
             collection = sql.take_relevant_user(event.user_id)
             try:
-                peer_id = event.peer_id
-                rel_foto = vku.get_photos(collection[coll_i])
+                rel_foto = vku.get_photos(collection[coll_i][0])
                 photos = []
-                for foto in rel_foto[0:3]:
-                    photos.append(f'photo{foto[4]}_{foto[3]}_{vk_tok}')
-                vk.messages.send(
-                    random_id=random.randint(0, 2048),
-                    peer_id=peer_id,
-                    attachment=photos,
-                    message=None)
-                coll_i += 1
-                button('Жми кнокпи и будет тебе счастье', full_kb)
+                if rel_foto:
+                    for foto in rel_foto[0:3]:
+                        photos.append(f'photo{foto[4]}_{foto[3]}_{vk_tok}')
+                    vk.messages.send(
+                        random_id=random.randint(0, 2048),
+                        peer_id=event.peer_id,
+                        attachment=photos,
+                        message=f'{collection[coll_i][1]}\nhttps://vk.com/id{collection[coll_i][0]}')
+                    coll_i += 1
+                    button('Жми кнопки и будет тебе счастье', full_kb)
+                else:
+                    vk.messages.send(
+                        random_id=random.randint(0, 2048),
+                        peer_id=event.peer_id,
+                        attachment=photos,
+                        message=f'Фотографий у этого пользователя нет\n{collection[coll_i][1]}\nhttps://vk.com/id{collection[coll_i][0]}')
+                    coll_i += 1
+                    button('Жми кнопки и будет тебе счастье', full_kb)
             except KeyError:
+                traceback.print_exc()
                 write_msg(event.user_id, 'Люди кончились, иди работать')
                 coll_i = 0
+        elif event.to_me and event.text.lower() == 'like':
+            sql.make_favorite(event.user_id, collection[coll_i-1][0])
+            button('Добавлено, продолжаем?', keyboard)
 
-
-
+        elif event.to_me and event.text.lower() == 'избранное':
+            fav = sql.show_favorites(event.user_id)
+            fav_list = ''
+            for i in fav:
+                fav_list += (f'{i[1]}: https://vk.com/id{i[0]}\n')
+            pprint(fav_list)
+            vk.messages.send(
+                random_id=random.randint(0, 2048),
+                peer_id=event.peer_id,
+                message=fav_list)
 
 
