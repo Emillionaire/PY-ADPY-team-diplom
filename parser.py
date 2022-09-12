@@ -33,7 +33,8 @@ upload = VkUpload(authorize)
 
 vku = VkUsers()
 sql = Sql_table()
-settings = dict(one_time=False, inline=True)
+
+settings = dict(one_time=True, inline=False)
 keyboard = VkKeyboard(**settings) #клавиатура из одной кнопки
 keyboard.add_button('Next', color=VkKeyboardColor.PRIMARY)
 
