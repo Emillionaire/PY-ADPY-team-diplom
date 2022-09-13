@@ -1,8 +1,5 @@
 import configparser
-from pprint import pprint
-
 import requests
-
 from sql import Sql_table
 
 sql = Sql_table()
@@ -88,5 +85,5 @@ class VkUsers:
 
 
 
-vvv = VkUsers()
-vvv.get_another_people(197865810)
+# vvv = VkUsers()
+# print(bool(vvv.get_photos(82947624)))

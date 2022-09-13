@@ -76,9 +76,3 @@ class Sql_table:
             self.conn.commit()
             result = cur.fetchall()
         return result
-
-
-
-# mmm =Sql_table()
-# mmm.add_all_persons('5544')
-# mmm.add_relevant_persons('95181270', '2971071')
